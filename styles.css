@@ -1,0 +1,404 @@
+/* ==========================================
+   CONFIGURACIÓN GENERAL Y RESETEO
+   ========================================== */
+* {
+    margin: 0;         /* Elimina los márgenes predeterminados del navegador */
+    padding: 0;        /* Elimina los rellenos predeterminados del navegador */
+    box-sizing: border-box; /* Hace que el ancho/alto incluyan el borde y relleno para evitar desbordes */
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; /* Aplica una tipografía limpia y moderna */
+}
+
+body {
+    background-color: #0f172a; /* Fondo azul oscuro profundo (estilo modo oscuro) */
+    color: #f8fafc;            /* Color de texto blanco hueso para que contraste suavemente */
+    overflow-x: hidden;        /* Oculta barras de desplazamiento horizontales si algo sobresale de la pantalla */
+    /* MODIFICACIÓN: Añadido para que el menú fijo no tape el título "Assembler System.Net" */
+    padding-top: 140px;        
+}
+
+/* ==========================================
+   BARRA DE NAVEGACIÓN (ALINEADA EN FILA Y CENTRADA)
+   ========================================== */
+.navbar {
+    display: flex;             /* Activa Flexbox para alinear los elementos en línea */
+    flex-direction: row;       /* Asegura que el logo y el menú se mantengan en la misma fila */
+    justify-content: center;   /* ¡Clave!: Empuja todo el bloque (logo y menú) al centro horizontal de la pantalla */
+    align-items: center;       /* Centra verticalmente el logo con respecto a los textos */
+    gap: 50px;                 /* Crea un espacio de separación de 50px entre el logo y el inicio del menú */
+    padding: 20px 50px;        /* Espaciado interno de la barra de navegación */
+    background-color: #1e293b; /* Fondo oscuro */
+    box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1); 
+    
+    /* MODIFICACIÓN: Propiedades para hacer el menú estático/fijo */
+    position: fixed;           /* Lo despega del flujo y lo fija en la pantalla */
+    top: 0;                    /* Lo alinea exactamente arriba */
+    left: 0;                   /* Lo alinea a la izquierda */
+    width: 100%;               /* Fuerza a que abarque todo el ancho de la pantalla */
+    z-index: 9999;             /* Capa alta para que el carrusel 3D no pase por encima del menú */
+}
+
+.logo img {
+    height: 100px;              /* Altura fija del logotipo */
+    display: block;            
+}
+
+.menu {
+    display: flex;             /* Activa Flexbox para los enlaces */
+    align-items: center;       /* Alinea los textos verticalmente */
+}
+
+.menu a {
+    color: #94a3b8;            
+    text-decoration: underline;     
+    margin: 0 15px;            /* Espaciado uniforme de 15px a la izquierda y derecha de cada enlace */
+    font-weight: 500;          
+    transition: color 0.3s ease; 
+}
+
+/* Efecto al pasar el cursor sobre los enlaces */
+.menu a:hover {
+    color: #38bdf8;            
+}
+
+
+/* ==========================================
+   SECCIÓN PRINCIPAL (CONTENIDO AJUSTADO)
+   ========================================== */
+.hero-section {
+    display: flex;             
+    flex-direction: column;    
+    align-items: center;       
+    justify-content: flex-start; /* Cambiado: Alinea el contenido al principio (arriba) en vez del centro */
+    min-height: calc(100vh - 85px); 
+    padding: 15px 20px 40px 20px; /* Cambiado: Reducimos el espacio superior a solo 15px (Antes era 40px) */
+}
+
+.title {
+    margin-top: 10px;          /* Añadido: Un margen muy pequeño arriba para que no pegue al navbar */
+    margin-bottom: 30px;       /* Cambiado: Reducido a 30px (Antes era 60px) para acercar el carrusel */
+    font-size: 2.5rem;         
+    text-align: center;        
+    letter-spacing: 1px;    
+    text-shadow: 
+    0 0 4px #fff,
+    0 0 11px #fff,
+    0 0 19px #fff,
+    0 0 40px #00f3ff,
+    0 0 80px #00f3ff,
+    0 0 90px #00f3ff,
+    0 0 100px #00f3ff;
+  animation: neon-flicker 1.5s infinite alternate;
+   
+}
+
+
+/* ==========================================
+   LÓGICA DEL CARRUSEL 3D
+   ========================================== */
+   
+/* 1. La Ventana/Escenario */
+.carousel-container {
+    position: relative;        /* Permite posicionar elementos absolutos dentro de él */
+    width: 300px;              /* Ancho base de la zona del carrusel */
+    height: 380px;             /* Alto base de la zona del carrusel */
+    perspective: 1000px;       /* ¡Clave!: Define la distancia del espectador. Menor número = efecto 3D más exagerado */
+}
+
+/* 2. El Cilindro Giratorio */
+.carousel-3d {
+    position: absolute;        
+    width: 100%;               /* Ocupa todo el ancho de su contenedor (300px) */
+    height: 100%;              /* Ocupa todo el alto de su contenedor (380px) */
+    transform-style: preserve-3d; /* ¡Clave!: Le dice al navegador que los hijos directos mantendrán su volumen 3D */
+    animation: rotateCarousel 20s linear infinite; /* Aplica la animación llamada 'rotateCarousel' de 20s de duración infinita */
+}
+
+/* ==========================================
+   NUEVA LÓGICA PARA INTERACCIÓN IZQUIERDA / DERECHA
+   ========================================== */
+
+/* Contenedor padre para posicionar las zonas de detección */
+.carousel-wrapper {
+    position: relative;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    width: 100%;
+}
+
+/* Zonas invisibles a los costados del carrusel */
+.hover-zone {
+    position: absolute;
+    top: 50%;
+    transform: translateY(-50%);
+    width: 30vw;          /* Ocupa el 30% del ancho de la pantalla a cada lado */
+    height: 400px;        /* Altura interactiva */
+    z-index: 10;          /* Se posiciona por encima para detectar el mouse */
+    cursor: pointer;
+    /* background: rgba(255, 0, 0, 0.1); */ /* Descomenta esta línea si quieres ver las zonas mientras pruebas */
+}
+
+.left-zone {
+    left: 10%;            /* Posicionado a la izquierda */
+}
+
+.right-zone {
+    right: 10%;           /* Posicionado a la derecha */
+}
+
+/* 
+   EFECTO: Cuando el mouse pasa sobre la zona IZQUIERDA, 
+   forzamos al carrusel a girar al revés (de 360deg a 0deg) y más rápido 
+*/
+.left-zone:hover ~ .carousel-container .carousel-3d {
+    animation: rotateCarousel 10s linear infinite reverse;
+}
+
+/* 
+   EFECTO: Cuando el mouse pasa sobre la zona DERECHA, 
+   el carrusel acelera en su dirección normal (de 0deg a 360deg)
+*/
+.right-zone:hover ~ .carousel-container .carousel-3d {
+    animation: rotateCarousel 10s linear infinite normal;
+}
+
+
+/* 3. Las Tarjetas Flotantes */
+.carousel-item {
+    position: absolute;        
+    width: 100%;               
+    height: 100%;              
+    background: #1e293b;       /* Fondo oscuro para la tarjeta */
+    border-radius: 12px;       /* Bordes redondeados */
+    overflow: hidden;          /* Corta la imagen si sobresale de las esquinas redondeadas */
+    border: 1px solid #334155; /* Borde muy fino para definir la tarjeta en la oscuridad */
+    box-shadow: 0 10px 25px rgba(0, 0, 0, 0.5); /* Sombra pesada para dar sensación de flotación */
+    
+    /* EXPLICACIÓN MATEMÁTICA DEL MODELADO 3D:
+       - 'var(--i)' toma el número asignado en el HTML (1, 2, 3 o 4).
+       - Restamos 1 para que el primer elemento empiece en 0 grados.
+       - Multiplicamos por 90deg porque un círculo tiene 360° y tenemos 4 tarjetas (360 / 4 = 90).
+       - 'translateZ(280px)' empuja cada tarjeta hacia el frente de su respectivo ángulo, creando el círculo virtual. */
+    transform: rotateY(calc((var(--i) - 1) * 90deg)) translateZ(280px);
+    
+    transition: transform 0.5s ease; /* Suaviza movimientos extras si los aplicaras */
+}
+
+/* Estilos de las imágenes dentro de las tarjetas */
+.carousel-item img {
+    width: 100%;
+    height: 55%;               /* Ocupa un poco más de la mitad superior de la tarjeta */
+    object-fit: fill;         /* Recorta y escala la imagen sin deformarla para llenar el espacio */
+}
+
+/* Estilos de los textos dentro de las tarjetas */
+.item-desc {
+    padding: 15px;             
+    text-align: center;        
+}
+
+.item-desc h3 {
+    font-size: 1.2rem;
+    color: #38bdf8;            /* Título del servicio en azul brillante */
+    margin-bottom: 8px;        
+}
+
+.item-desc p {
+    font-size: 0.9rem;
+    color: #94a3b8;            /* Texto descriptivo gris suave */
+    line-height: 1.4;          /* Espaciado de renglones para mejor lectura */
+}
+
+/* ==========================================
+   ANIMACIÓN DE ROTACIÓN CONSTANTE
+   ========================================== */
+@keyframes rotateCarousel {
+    from {
+        transform: rotateY(0deg);   /* Punto de partida: sin rotación */
+    }
+    to {
+        transform: rotateY(360deg); /* Punto final: da una vuelta completa sobre el eje vertical Y */
+    }
+}
+
+/* ==========================================
+   ANIMACIÓN DE NEON
+   ========================================== */
+/* Añade esta animación al final de tu archivo CSS */
+@keyframes neon-flicker {
+  0%, 18%, 22%, 25%, 53%, 57%, 100% {
+    text-shadow: 0 0 4px #fff, 0 0 11px #fff, 0 0 19px #fff, 0 0 40px #00f3ff, 0 0 80px #00f3ff, 0 0 90px #00f3ff, 0 0 100px #00f3ff;
+  }
+  20%, 24%, 55% {        
+    text-shadow: none;
+    color: #333333; /* Color del texto cuando simula estar "apagado" */
+  }
+}
+
+  .reloj-contenedor {
+    background-color: #1e293b; /* Fondo ultra oscuro para resaltar el neón */
+    padding: 25px 35px;
+    display: inline-block;
+    text-align: center;
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; /* Tipografía estilo digital/código */
+    /* Resplandor exterior e interior del contenedor */
+    box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1); 
+  }
+
+  .reloj-hora {
+   font-size: 1.5rem;
+    font-weight: bold;
+    color: #00f0ff; /* Color principal: Cian Neón */
+    letter-spacing: 3px;
+    margin-bottom: 8px;
+    /* Capas de sombra para crear el efecto de brillo intenso */
+    text-shadow: 0 0 5px #00f0ff, 
+                 0 0 10px #00f0ff, 
+                 0 0 20px #00f0ff, 
+                 0 0 40px #00a2ff;
+  }
+
+  .reloj-fecha {
+    font-size: 1rem;
+    font-weight: bold;
+    color: #ff007f; /* Color secundario: Rosa/Magente Neón */
+    letter-spacing: 1px;
+    text-transform: uppercase;
+    /* Brillo más sutil para la fecha para mantener legibilidad */
+    text-shadow: 0 0 5px #ff007f, 
+                 0 0 15px #ff007f;
+  }
+
+      /* ESTILOS DE LA TARJETA MINI */
+  .clima-neon-mini {
+     background-color: #1e293b !important; /* Fondo oscuro */
+    
+    border-radius: 8px !important; /* Esquinas curvas */
+    padding: 8px 10px !important; /* Margen interno mínimo */
+    display: inline-block !important; /* Caja adaptable */
+    text-align: center !important; /* Centra el contenido */
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif !important; /* Letra legible */
+    box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1) !important; 
+    min-width: 120px !important; /* Ancho mínimo ultra chico */
+    max-width: 140px !important; /* Ancho máximo fijo */
+    box-sizing: border-box !important;
+    line-height: 1.1 !important; /* Menos espacio vertical */
+  }
+  .clima-neon-mini .mini-ubicacion {
+    font-size: 0.8rem !important; color: #00f0ff !important; /* Letra cian */
+    /* Capas de sombra para crear el efecto de brillo intenso */
+    text-shadow: 0 0 5px #00f0ff, 
+                 0 0 10px #00f0ff, 
+                 0 0 20px #00f0ff, 
+                 0 0 40px #00a2ff !important;
+    text-transform: uppercase !important; font-weight: bold !important;
+    margin-bottom: 4px !important; letter-spacing: 0.5px !important; /* Separación de letras */
+  }
+  .clima-neon-mini .mini-temp {
+    font-size: 1.4rem !important; font-weight: bold !important; /* Número chico */
+    color: #39ff14 !important; margin-bottom: 1px !important;
+    text-shadow: 0 0 4px #39ff14 !important; /* Brillo verde */
+  }
+  .clima-neon-mini .mini-desc {
+    font-size: 0.8rem !important; color: #ff007f !important; /* Letra rosa */
+    font-weight: bold !important;
+    text-transform: uppercase !important; letter-spacing: 0.5px !important;
+  }
+  .clima-neon-mini .mini-icono-espacio {
+    display: flex !important; justify-content: center !important; align-items: center !important; 
+    height: 25px !important; margin-bottom: 2px !important; /* Altura de icono limitada */
+  }
+  
+  /* ICONOS METEOROLÓGICOS MINI */
+  .clima-neon-mini .icono-sol {
+    width: 14px !important; height: 14px !important; background: #ffcc00 !important; border-radius: 50% !important;
+    box-shadow: 0 0 8px #ff5500 !important; animation: girarMini 20s linear infinite !important; /* Sol gira */
+  }
+  @keyframes girarMini { 100% { transform: rotate(360deg); } }
+  
+  .clima-neon-mini .icono-nube {
+    width: 18px !important; height: 7px !important; background: #94a3b8 !important; border-radius: 10px !important;
+    position: relative !important; animation: flotarMini 4s ease-in-out infinite !important; /* Nube flota */
+  }
+  .clima-neon-mini .icono-nube:before, .clima-neon-mini .icono-nube:after { content: '' !important; background: #94a3b8 !important; position: absolute !important; border-radius: 50% !important; }
+  .clima-neon-mini .icono-nube:before { width: 9px !important; height: 9px !important; top: -5px !important; left: 3px !important; }
+  .clima-neon-mini .icono-nube:after { width: 11px !important; height: 11px !important; top: -7px !important; right: 2px !important; }
+  @keyframes flotarMini { 0%, 100% { transform: translateY(0); } 50% { transform: translateY(-2px); } }
+  
+  .clima-neon-mini .icono-lluvia {
+    width: 18px !important; height: 7px !important; background: #557799 !important; border-radius: 10px !important; position: relative !important; animation: flotarMini 4s ease-in-out infinite !important;
+  }
+  .clima-neon-mini .icono-lluvia:before, .clima-neon-mini .icono-lluvia:after { content: '' !important; background: #557799 !important; position: absolute !important; border-radius: 50% !important; }
+  .clima-neon-mini .icono-lluvia:before { width: 9px !important; height: 9px !important; top: -5px !important; left: 3px !important; }
+  .clima-neon-mini .icono-lluvia:after { width: 11px !important; height: 11px !important; top: -7px !important; right: 2px !important; }
+  .clima-neon-mini .icono-lluvia-gotas {
+    position: absolute !important; bottom: -5px !important; left: 5px !important;
+    width: 1.5px !important; height: 4px !important; background: #00f0ff !important;
+    box-shadow: 4px 0px 0 #00f0ff, 8px 0.5px 0 #00f0ff !important; border-radius: 1px !important;
+    animation: caerMini 1s linear infinite !important; /* Gotas caen */
+  }
+  @keyframes caerMini { 0% { opacity: 1; transform: translateY(0); } 100% { opacity: 0; transform: translateY(3px); } }
+  
+  .clima-neon-mini .icono-tormenta {
+    width: 18px !important; height: 7px !important; background: #334155 !important; border-radius: 10px !important; position: relative !important; animation: flotarMini 3s ease-in-out infinite !important;
+  }
+  .clima-neon-mini .icono-tormenta:before, .clima-neon-mini .icono-tormenta:after { content: '' !important; background: #334155 !important; position: absolute !important; border-radius: 50% !important; }
+  .clima-neon-mini .icono-tormenta:before { width: 9px !important; height: 9px !important; top: -5px !important; left: 3px !important; }
+  .clima-neon-mini .icono-tormenta:after { width: 11px !important; height: 11px !important; top: -7px !important; right: 2px !important; }
+  .clima-neon-mini .icono-rayo {
+    position: absolute !important; bottom: -5px !important; left: 8px !important; width: 0 !important; height: 0 !important; 
+    border-left: 2px solid transparent !important; border-right: 1.5px solid transparent !important;
+    border-top: 5px solid #ffcc00 !important; transform: skewX(-20deg) !important; animation: rayoMini 1.5s ease-in-out infinite !important; /* Rayo parpadea */
+  }
+  @keyframes rayoMini { 0%, 80%, 100% { opacity: 0; } 85%, 95% { opacity: 1; } }
+
+  /* ==========================================
+   ESTRUCTURA DE CONTENEDORES (QUIÉNES SOMOS / CONTACTO)
+   ========================================== */
+
+/* ==========================================
+   ESTRUCTURA CENTRADA Y 100% RESPONSIVA
+   ========================================== */
+
+/* 1. Contenedor Padre: Centra las dos tarjetas en la pantalla */
+.contenedor-principal-info {
+    display: flex !important;
+    flex-direction: row !important;
+    flex-wrap: wrap !important;
+    justify-content: center !important; /* CENTRA los bloques si cambian de fila */
+    align-items: stretch !important;    /* Hace que ambos bloques midan lo mismo de alto */
+    gap: 20px !important;
+    width: 100% !important;
+    max-width: 1200px !important;
+    margin: 20px auto !important;
+    padding: 0 15px !important;
+    box-sizing: border-box !important;
+}
+
+/* 2. Bloques Hijos: Centra el texto y los elementos internos */
+.contenedor-info-bloque {
+    display: flex !important;           /* Convertimos el bloque en flex para alinear su contenido */
+    flex-direction: column !important;  /* Los textos se apilarán de arriba hacia abajo */
+    justify-content: center !important; /* CENTRA el contenido verticalmente */
+    align-items: center !important;     /* CENTRA el contenido horizontalmente */
+    text-align: center !important;      /* CENTRA todas las líneas de texto por defecto */
+    
+    flex: 1 1 350px !important;         /* Se reparten el espacio al 50%. En pantallas chicas bajan fluidamente */
+    max-width: 550px !important;        /* Evita que las tarjetas se estiren demasiado en pantallas gigantes */
+    box-sizing: border-box !important;
+    
+    /* Tus estilos estéticos */
+    background-color: #0f172a;
+    padding: 30px;         
+    border-radius: 8px;    
+    box-shadow: 0 4px 6px -1px oklab(92.277% 0.00519 0.00151); 
+}
+
+/* 3. Ajuste para el contenedor de enlaces e iconos internos */
+.contact-info {
+    display: flex !important;
+    flex-direction: column !important;
+    align-items: center !important;     /* Asegura que el enlace de WhatsApp y textos se alineen al centro */
+    gap: 12px !important;
+    width: 100% !important;
+}

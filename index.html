@@ -1,0 +1,163 @@
+<!DOCTYPE html>
+<!-- Define que este archivo es un documento HTML5 moderno -->
+<html lang="es">
+<head>
+    <!-- Define la codificación de caracteres para permitir tildes y la letra 'ñ' -->
+    <meta charset="UTF-8">
+    <!-- Asegura que la página sea responsiva y se adapte al tamaño de pantallas móviles -->
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <!-- Título que aparecerá en la pestaña del navegador -->
+    <title>Assembler System.Net - Servicios</title>
+    <!-- Conecta este archivo HTML con la hoja de estilos externa llamada styles.css -->
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+
+    <!-- Encabezado principal de la página (Barra de navegación) -->
+    <header class="navbar">
+                <!-- CONTENEDOR PRINCIPAL: Tarjeta del clima -->
+        <!-- Recuadro exterior del widget mini -->
+        <div class="clima-neon-mini">
+        <!-- Línea de Ciudad y Estado -->
+        <div id="ubicacion-nombre" class="mini-ubicacion">Detectando...</div>
+        <!-- Espacio para el icono -->
+        <div class="mini-icono-espacio"><div id="icono-animado"></div></div>
+        <!-- Número de la temperatura -->
+        <div id="clima-temp" class="mini-temp">--°C</div>
+        <!-- Estado del cielo -->
+        <div id="clima-desc" class="mini-desc">Cargando...</div>
+        </div>
+        <!-- Contenedor del logotipo de la empresa -->
+        <div class="logo">
+            <!-- Imagen del logo. El atributo 'alt' muestra un texto alternativo si la imagen no carga -->
+            <img src="floppy_disk_walking_md_wht_sf.gif" alt="Logo de la Empresa">
+        </div>
+
+        <!-- Menú que contiene los enlaces de navegación -->
+        <nav class="menu">
+            <!-- Enlaces individuales; el '#' actúa como un marcador de posición temporal -->
+            <a href="#">Inicio</a>
+            <a href="#nosotros">Nosotros</a>
+            <a href="#contacto">Contacto</a>
+        </nav>
+
+                <!-- Contenedor del reloj -->
+        <div class="reloj-contenedor">
+        <div id="hora" class="reloj-hora">00:00:00</div>
+        <div id="fecha" class="reloj-fecha">Cargando fecha...</div>
+        </div>
+
+    </header>
+
+    <!-- Sección principal del contenido (Hero section) -->
+    <main class="hero-section">
+        <!-- Título principal de la sección de servicios -->
+        <h1 class="title">Assembler System.Net</h1>
+          <!-- Salto de línea agregado para generar más espacio vertical hacia abajo -->
+        <br><br><br><br>
+
+    <div class="carousel-wrapper">
+    <!-- Estas dos zonas detectarán hacia dónde se mueve el cursor -->
+    <div class="hover-zone left-zone"></div>
+    <div class="hover-zone right-zone"></div>
+        <!-- Escenario principal: Funciona como la "ventana" fija a través de la cual vemos el plano 3D -->
+        <div class="carousel-container">
+            <!-- El cilindro o carrusel virtual que va a rotar sobre su propio eje central -->
+            <div class="carousel-3d">
+                
+                <!-- Tarjeta Servicio 1. '--i:1' es una variable CSS personalizada que define su posición -->
+                <div class="carousel-item" style="--i:1;">
+                    <!-- Imagen representativa del primer servicio -->
+                    <img src="Computadoras.jpg" alt="Servicio 1">
+                    <!-- Contenedor de los textos informativos del servicio -->
+                    <div class="item-desc">
+                        <h3>Reparación de Equipos de Computo.</h3>
+                        <p>Reparación de Equipos de Computo, Laptops e Impresoras.</p>
+                    </div>
+                </div>
+
+                <!-- Tarjeta Servicio 2. Se le asigna el índice 2 para la fórmula matemática en CSS -->
+                <div class="carousel-item" style="--i:2;">
+                    <img src="Ventas.jpg" alt="Servicio 2">
+                    <div class="item-desc">
+                        <h3>Venta de Equipo de Computo.</h3>
+                        <p>Venta de Equipo de Computo como Pcs de Escritorio, Laptops e Impresoras.</p>
+                    </div>
+                </div>
+
+                <!-- Tarjeta Servicio 3. Se le asigna el índice 3 -->
+                <div class="carousel-item" style="--i:3;">
+                    <img src="Programacion.jpg" alt="Servicio 3">
+                    <div class="item-desc">
+                        <h3>Desarrollo de Software.</h3>
+                        <p>Desarrollo de Software a la medida de su Empresa.</p>
+                    </div>
+                </div>
+
+                <!-- Tarjeta Servicio 4. Se le asigna el índice 4 (Cierra el círculo de 4 lados a 90° cada uno) -->
+                <div class="carousel-item" style="--i:4;">
+                    <img src="Consolas.jpg" alt="Servicio 4">
+                    <div class="item-desc">
+                        <h3>Reparación de Consolas y Controles de Video Juegos.</h3>
+                        <p>Reparación, Mantenimiento, Corrección de Drifts y cambios de Botones y Gomas.</p>
+                    </div>
+                </div>
+
+            </div>
+        </div>
+    </div>    
+    <br><br><br><br><br><br>
+                <!-- Contenedor del número de visitas -->
+                <span>
+                    Visitas: 
+                    <span id="numero-visitas">0</span>
+                </span>
+
+
+    </main>
+
+        <!-- ========================================== -->
+    <!-- NUEVA SECCIÓN: DESCRIPCIÓN DEL NEGOCIO      -->
+    <!-- ========================================== -->
+
+    <div class="contenedor-principal-info">
+
+
+        <div id="nosotros" class="contenedor-info-bloque">
+            <h2 style="text-decoration: underline;">Quiénes Somos</h2>
+            <p>Somos una Empresa, Chiapaneca de mas de 24 años de experiencia en Venta y Reparación de Equipos de Computo, Instalación de Redes Alambricas e Inalambricas y Desarrollo de Software Integral Para Pequeñas, Medianas y Grandes Empresas.</p>
+            <p>En <strong>Assembler System.Net</strong> nos dedicamos a ofrecer soluciones tecnológicas a la medida de tu Negocio o Empresa. </p>
+        </div>
+
+    
+    <!-- ========================================== -->
+    <!-- NUEVA SECCIÓN: CONTACTO                    -->
+    <!-- ========================================== -->
+
+    <div id="contacto" class="contenedor-info-bloque">
+        <h2 style="text-decoration: underline;">Contacto</h2>
+            <p>¿Tienes alguna duda o quieres cotizar un servicio? </p>
+            <p>Ponte en contacto con nosotros.</p>
+            
+            <div class="contact-info">
+                <p>📧 <strong>Correo:</strong> assemblersystemnet@gmail.com</p>
+                <a href="https://w.app/luccjn" target="_blank" style="text-decoration: none; color: #25D366; font-weight: bold; display: inline-flex; align-items: center; gap: 8px;">
+                    <!-- Icono de WhatsApp en SVG limpio -->
+                    <svg xmlns="http://w3.org" width="20" height="20" fill="currentColor" viewBox="0 0 16 16">
+                        <path d="M13.601 2.326A7.85 7.85 0 0 0 7.994 0C3.627 0 .068 3.558.064 7.926c0 1.399.366 2.76 1.057 3.965L0 16l4.204-1.102a7.9 7.9 0 0 0 3.79.948h.003c4.368 0 7.926-3.559 7.93-7.93a7.9 7.9 0 0 0-2.326-5.592zm-5.607 11.366a6.52 6.52 0 0 1-3.303-.893l-.237-.14-2.455.644.656-2.39-.153-.244a6.52 6.52 0 0 1-1.001-3.493c.002-3.605 2.943-6.545 6.546-6.545 1.748 0 3.392.68 4.625 1.913a6.5 6.5 0 0 1 1.912 4.629c-.004 3.605-2.946 6.545-6.55 6.545"/>
+                    </svg>
+                    <strong>WhatsApp:</strong> +52 968 118 5537
+                </a>
+                <p>📍 <strong>Ubicación:</strong> Ocozocoautla de Espinosa, Chiapas. CP. 29140</p>
+            </div>
+    
+    </div>
+     
+    </div>
+    
+
+
+                <!-- Solo dejamos tu archivo local -->
+                <script src="/contador.js?v=1"></script>
+</body>
+</html>
