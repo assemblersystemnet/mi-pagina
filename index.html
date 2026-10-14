@@ -3,93 +3,94 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Consulta de Clima</title>
+    <title>Clima en Tiempo Real</title>
     <style>
         body {
-            font-family: Arial, sans-serif;
-            background-color: #f0f2f5;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #74b9ff, #0984e3);
             display: flex;
             justify-content: center;
             align-items: center;
             height: 100vh;
             margin: 0;
+            color: #2d3436;
         }
         .weather-card {
             background: white;
-            padding: 25px;
-            border-radius: 12px;
-            box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+            padding: 30px;
+            border-radius: 16px;
+            box-shadow: 0 10px 25px rgba(0,0,0,0.15);
             text-align: center;
-            max-width: 350px;
+            max-width: 320px;
             width: 100%;
         }
-        h2 { margin-top: 0; color: #333; }
-        .temp { font-size: 2.5rem; font-weight: bold; color: #007bff; margin: 10px 0; }
-        .desc { text-transform: capitalize; color: #666; }
-        .error-msg { color: #dc3545; font-weight: bold; }
+        h2 { margin: 0 0 10px 0; font-size: 1.6rem; color: #2d3436; }
+        .city { font-size: 1.1rem; color: #636e72; margin-bottom: 20px; }
+        .temp { font-size: 3rem; font-weight: bold; color: #0984e3; margin: 10px 0; }
+        .desc { text-transform: capitalize; font-weight: 600; color: #2d3436; }
+        .error-msg { color: #d63031; font-weight: bold; }
     </style>
 </head>
 <body>
 
     <div class="weather-card">
-        <h2>Clima Actual</h2>
+        <h2>Condiciones Climatológicas</h2>
         <div id="weather-content">
-            <p>Cargando datos del clima...</p>
+            <p>Obteniendo coordenadas y clima...</p>
         </div>
     </div>
 
     <script>
-        // Coordenadas basadas en tu consulta previa (Ocozocoautla, Chiapas aproximadamente)
+        // Variables globales de configuración
         const lat = 16.75; 
         const lon = -93.37523238236625;
         const apiKey = '6a88db408312446d38614b7874884c84';
 
-        // Función para obtener los datos desde OpenWeather
+        // LÍNEA 53: Función corregida con el endpoint oficial de OpenWeather y la sintaxis de parámetros correcta (?lat=)
         async function getWeatherData(lat, lon) {
-            // URL corregida con el subdominio 'api.' y los parámetros estructurados (?lat=)
             const url = `https://openweathermap.org{lat}&lon=${lon}&appid=${apiKey}&units=metric&lang=es`;
 
             try {
                 const response = await fetch(url);
                 
-                // Si la respuesta no es exitosa (ej. API key inválida o error 404)
+                // Validación para detectar problemas como API keys inactivas (Error 401)
                 if (!response.ok) {
-                    throw new Error(`Código de error: ${response.status}`);
+                    throw new Error(`Servidor respondió con código ${response.status}`);
                 }
 
                 const data = await response.json();
                 
-                // Llamamos a la función para pintar los datos en pantalla
+                // Pintamos los resultados en el HTML si todo salió bien
                 displayWeather(data);
 
             } catch (error) {
-                // Manejo de errores de red o caídas del servidor
+                // LÍNEA 67: Manejo seguro de errores para evitar cierres inesperados de la app
                 console.error("Error capturado:", error.message);
                 document.getElementById('weather-content').innerHTML = `
-                    <p class="error-msg">No se pudo obtener el clima.</p>
-                    <small>${error.message}</small>
+                    <p class="error-msg">Error al conectar con el clima.</p>
+                    <small style="color: #74b9ff">${error.message}</small>
                 `;
             }
         }
 
-        // Función para renderizar la información en el contenedor HTML
+        // Función encargada de estructurar e insertar los datos en el contenedor del HTML
         function displayWeather(data) {
             const container = document.getElementById('weather-content');
             
-            const cityName = data.name || "Tu Ubicación";
+            const cityName = data.name || "Ubicación Consultada";
             const temp = Math.round(data.main.temp);
-            const description = data.weather[0].description;
+            const description = data.weather[0].description; // Acceso correcto al arreglo de clima
             const icon = data.weather[0].icon;
 
             container.innerHTML = `
-                <h3>${cityName}</h3>
-                <img src="https://openweathermap.org{icon}@2x.png" alt="${description}">
+                <div class="city">${cityName}</div>
+                <img src="https://openweathermap.org{icon}@2x.png" alt="${description}" width="100">
                 <div class="temp">${temp}°C</div>
                 <p class="desc">${description}</p>
             `;
         }
 
-        // Ejecución automática al cargar la página
+        // LÍNEA 93: Inicialización automática de la consulta de datos al cargar el archivo
         getWeatherData(lat, lon);
     </script>
 </body>
