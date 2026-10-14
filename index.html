@@ -3,18 +3,193 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Clima por Ubicación</title>
-    <link rel="stylesheet" href="style.css">
+    <title>Clima en Tiempo Real</title>
+    <style>
+        :root {
+            --bg-color: #e0e8f5;
+            --card-bg: #ffffff;
+            --text-main: #2c3e50;
+            --text-sub: #7f8c8d;
+            --accent: #3498db;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: var(--bg-color);
+            color: var(--text-main);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            margin: 0;
+        }
+
+        .weather-card {
+            background: var(--card-bg);
+            padding: 30px;
+            border-radius: 20px;
+            box-shadow: 0 10px 25px rgba(0,0,0,0.1);
+            text-align: center;
+            max-width: 350px;
+            width: 100%;
+            transition: transform 0.3s ease;
+        }
+
+        .weather-card:hover {
+            transform: translateY(-5px);
+        }
+
+        h2 {
+            margin: 0 0 10px 0;
+            font-size: 1.8rem;
+        }
+
+        .status {
+            color: var(--text-sub);
+            font-style: italic;
+            margin-bottom: 20px;
+        }
+
+        .temp-container {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+            margin: 15px 0;
+        }
+
+        .temp {
+            font-size: 3.5rem;
+            font-weight: bold;
+            color: var(--accent);
+        }
+
+        .weather-icon {
+            width: 80px;
+            height: 80px;
+        }
+
+        .details {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 10px;
+            margin-top: 20px;
+            padding-top: 20px;
+            border-top: 1px solid #eee;
+            font-size: 0.9rem;
+            color: var(--text-sub);
+        }
+
+        .details div span {
+            display: block;
+            font-weight: bold;
+            color: var(--text-main);
+            font-size: 1.1rem;
+        }
+    </style>
 </head>
 <body>
+
     <div class="weather-card">
-        <h2 id="location">Cargando ubicación...</h2>
-        <div class="weather-info">
-            <span id="temperature">--</span>°C
+        <h2 id="location">Detectando ubicación...</h2>
+        <div id="status" class="status">Por favor, permite el acceso a tu ubicación.</div>
+        
+        <div id="weather-body" style="display: none;">
+            <div class="temp-container">
+                <img id="icon" class="weather-icon" src="" alt="Icono del clima">
+                <span id="temperature" class="temp">--°C</span>
+            </div>
+            <div class="details">
+                <div>Humedad <span id="humidity">--%</span></div>
+                <div>Viento <span id="wind">-- km/h</span></div>
+            </div>
         </div>
-        <p id="description">Detectando el clima de tu zona...</p>
     </div>
 
-    <script src="script.js"></script>
+    <script>
+        // Tu clave API provista y parámetros de configuración
+        const API_KEY = '6a88db408312446d38614b7874884c84';
+        const LANG = 'es'; 
+        const UNITS = 'metric'; // Métrica para grados Celsius y km/h
+
+        // Referencias al DOM
+        const locationEl = document.getElementById('location');
+        const statusEl = document.getElementById('status');
+        const weatherBody = document.getElementById('weather-body');
+        const temperatureEl = document.getElementById('temperature');
+        const iconEl = document.getElementById('icon');
+        const humidityEl = document.getElementById('humidity');
+        const windEl = document.getElementById('wind');
+
+        // 1. Iniciar geolocalización al cargar la web
+        window.addEventListener('load', () => {
+            if (navigator.geolocation) {
+                navigator.geolocation.getCurrentPosition(getWeatherData, handleLocationError);
+            } else {
+                statusEl.textContent = "La geolocalización no es compatible con este navegador.";
+            }
+        });
+
+        // 2. Obtener datos de OpenWeather usando latitud y longitud
+        async function getWeatherData(position) {
+            const lat = position.coords.latitude;
+            const lon = position.coords.longitude;
+            
+            // Endpoint por coordenadas geográficas
+            const url = `https://openweathermap.org{lat}&lon=${lon}&appid=${API_KEY}&units=${UNITS}&lang=${LANG}`;
+
+            try {
+                statusEl.textContent = "Cargando datos meteorológicos...";
+                const response = await fetch(url);
+                
+                if (!response.ok) {
+                    throw new Error('Error al conectar con el servidor de clima');
+                }
+                
+                const data = await response.json();
+                renderWeather(data);
+            } catch (error) {
+                statusEl.textContent = "Error al obtener el clima. Inténtalo más tarde.";
+                console.error(error);
+            }
+        }
+
+        // 3. Pintar los datos dinámicamente en la interfaz de usuario
+        function renderWeather(data) {
+            statusEl.textContent = data.weather[0].description.toUpperCase();
+            locationEl.textContent = `${data.name}, ${data.sys.country}`;
+            temperatureEl.textContent = `${Math.round(data.main.temp)}°C`;
+            
+            // Cargar el icono oficial de OpenWeather
+            const iconCode = data.weather[0].icon;
+            iconEl.src = `https://openweathermap.org{iconCode}@2x.png`;
+            
+            humidityEl.textContent = `${data.main.humidity}%`;
+            // Conversión de m/s a km/h para el viento
+            const windKmH = Math.round(data.wind.speed * 3.6);
+            windEl.textContent = `${windKmH} km/h`;
+
+            // Mostrar el contenedor de datos una vez cargado
+            weatherBody.style.display = 'block';
+        }
+
+        // Manejo de errores de localización (ej. si el usuario deniega el permiso)
+        function handleLocationError(error) {
+            switch(error.code) {
+                case error.PERMISSION_DENIED:
+                    statusEl.textContent = "Permiso de ubicación denegado. No podemos saber tu municipio.";
+                    break;
+                case error.POSITION_UNAVAILABLE:
+                    statusEl.textContent = "La información de ubicación no está disponible.";
+                    break;
+                case error.TIMEOUT:
+                    statusEl.textContent = "Se agotó el tiempo de espera para obtener la ubicación.";
+                    break;
+                default:
+                    statusEl.textContent = "Ocurrió un error desconocido de localización.";
+            }
+            locationEl.textContent = "Ubicación no disponible";
+        }
+    </script>
 </body>
 </html>
